@@ -39,12 +39,13 @@ gt_mask = gt_alpha > 128  # Threshold de binarização
 # Criar a máscara binária para o cluster segmentado
 seg_mask = mascara_c4.reshape(imagem_rgb.shape[:2])  # Máscara segmentada (reshape para 2D)
 
-# Calcular o Índice de Jaccard
+# Calcular o Dice Score
 intersection = np.logical_and(seg_mask, gt_mask).sum()
-union = np.logical_or(seg_mask, gt_mask).sum()
-jaccard_index = intersection / union
+seg_sum = seg_mask.sum()
+gt_sum = gt_mask.sum()
+dice_score = (2 * intersection) / (seg_sum + gt_sum)
 
-print(f"Índice de Jaccard (IoU): {jaccard_index:.4f}")
+print(f"Dice Score: {dice_score:.4f}")
 
 
 

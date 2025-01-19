@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
+from PIL import Image
 
 caminho = "pdi_tf/arara_azul.png"  
 imagem = cv2.imread(caminho)
@@ -24,6 +25,24 @@ mascara_c4 = (labels == 1)
 imagem_c4 = np.zeros_like(pixels)
 imagem_c4[mascara_c4] = pixels[mascara_c4]
 imagem_c4 = imagem_c4.reshape(imagem_rgb.shape)
+
+# Carregar a ground truth com canal alfa
+gt_img = Image.open("pdi_tf/arara_azul_gt.png")
+gt_alpha = np.array(gt_img.getchannel("A"))  # Canal alfa da ground truth
+
+# Criar a máscara binária para o ground truth (1 para o objeto, 0 para o fundo)
+gt_mask = gt_alpha > 128  # Threshold de binarização
+
+# Criar a máscara binária para o cluster segmentado
+seg_mask = mascara_c4.reshape(imagem_rgb.shape[:2])  # Máscara segmentada (reshape para 2D)
+
+# Calcular o Dice Score
+intersection = np.logical_and(seg_mask, gt_mask).sum()
+seg_sum = seg_mask.sum()
+gt_sum = gt_mask.sum()
+dice_score = (2 * intersection) / (seg_sum + gt_sum)
+
+print(f"Dice Score: {dice_score:.4f}")
 
 
 
