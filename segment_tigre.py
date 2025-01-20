@@ -12,7 +12,7 @@ imagem_rgb = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB)
 pixels = imagem_rgb.reshape((-1, 3))
 
 # Aplicar k-means 
-k = 6
+k = 5
 kmeans = KMeans(n_clusters=k, random_state=42)
 kmeans.fit(pixels)
 
@@ -49,7 +49,14 @@ print(f"Dice Score: {dice_score:.4f}")
 
 
 
-plt.imshow(imagem_c4)
-plt.axis("off")
-plt.title("Cluster 4")
+#mostrar todos os clusters
+fig, axs = plt.subplots(1, k, figsize=(20, 5))
+for i in range(k):
+    mascara = (labels == i)
+    imagem_cluster = np.zeros_like(pixels)
+    imagem_cluster[mascara] = pixels[mascara]
+    imagem_cluster = imagem_cluster.reshape(imagem_rgb.shape)
+    axs[i].imshow(imagem_cluster)
+    axs[i].axis("off")
+    axs[i].set_title(f"Cluster {i}")
 plt.show()
